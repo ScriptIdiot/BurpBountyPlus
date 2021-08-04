@@ -242,7 +242,12 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
                                 for (String query : ShowColor.greps) {
                                     String[] tokens = query.split(",", 3);
                                     if(matchtype == 2) {// regex match
-                                        isFind = Tags.this.RegexQuery(tokens[2],responseText);
+                                        if(Tags.this.RegexQuery(tokens[2],responseText))
+                                        {
+                                            isFind = true;
+                                            break;
+
+                                        }
                                     }else{// Simple String
                                         if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
                                             isFind = true;
