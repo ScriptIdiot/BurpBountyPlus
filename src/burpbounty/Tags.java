@@ -36,6 +36,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
     public  List<String> payloads;
     private Map<String, LightColor>  ProfileColors;
     private BurpBountyExtension bbe;
+    private boolean IsLight;
 
     public Tags(final IBurpExtenderCallbacks callbacks, final String tagName, JTabbedPane panel) {
         this.callbacks = callbacks;
@@ -43,6 +44,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
         this.tagName = tagName;
         this.payloads = new ArrayList<>();
         ProfileColors =  new HashMap<String, LightColor>();
+        IsLight = true;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -282,30 +284,84 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
     public  void setBackgroundColor(Color color)
     {
         JTable table = logTable;
-        try {
-            DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
+//        try {
+//            DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
+//
+//                public Component getTableCellRendererComponent(JTable table,
+//                                                               Object value, boolean isSelected, boolean hasFocus,
+//                                                               int row, int column) {
+//                    final LogEntry logEntry =Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
+//                    if (payloads.contains(logEntry.payload)) {
+//                        setBackground(color);
+//                        setForeground(new Color(0xFF, 0xFF, 0xFF));
+//                    } else {
+//                        setBackground(new Color(0, 102, 255));
+//                        setForeground(new Color(0xFF, 0xFF, 0xFF));
+//                    }
+//                    return super.getTableCellRendererComponent(table, value,
+//                            isSelected, hasFocus, row, column);
+//                }
+//            };
+//            int columnCount = table.getColumnCount();
+//            for (int i = 0; i < columnCount; i++) {
+//                table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+        if(IsLight ==true){
+            try {
+                DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
 
-                public Component getTableCellRendererComponent(JTable table,
-                                                               Object value, boolean isSelected, boolean hasFocus,
-                                                               int row, int column) {
-                    final LogEntry logEntry =Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
-                    if (payloads.contains(logEntry.payload)) {
-                        setBackground(color);
-                        setForeground(new Color(0xFF, 0xFF, 0xFF));
-                    } else {
-                        setBackground(new Color(0, 102, 255));
-                        setForeground(new Color(0xFF, 0xFF, 0xFF));
+                    public Component getTableCellRendererComponent(JTable table,
+                                                                   Object value, boolean isSelected, boolean hasFocus,
+                                                                   int row, int column) {
+                        final LogEntry logEntry = Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
+
+                        String ProfileName = logEntry.profileName;
+                        LightColor ShowColor = GetProfileColor(ProfileName);
+                        int matchtype = ShowColor.matchtype;
+                        if (!ShowColor.greps.isEmpty()) {
+                            String responseText = new String(logEntry.requestResponse.getResponse());
+                            Boolean isFind = false;
+                            for (String query : ShowColor.greps) {
+                                String[] tokens = query.split(",", 3);
+                                if(matchtype == 2) {// regex match
+                                    isFind = Tags.this.RegexQuery(tokens[2],responseText);
+                                }else{// Simple String
+                                    if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
+                                        isFind = true;
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                            if (isFind) {
+                                setBackground(ShowColor.RowColor.get(1));
+                                setForeground(ShowColor.RowColor.get(0));
+                            } else {
+                                setBackground(new Color(0, 102, 255));
+                                setForeground(new Color(0xFF, 0xFF, 0xFF));
+                            }
+                        }else
+                        {
+                            setBackground(new Color(0, 102, 255));
+                            setForeground(new Color(0xFF, 0xFF, 0xFF));
+                        }
+                        return super.getTableCellRendererComponent(table, value,
+                                isSelected, hasFocus, row, column);
                     }
-                    return super.getTableCellRendererComponent(table, value,
-                            isSelected, hasFocus, row, column);
+                };
+                int columnCount = table.getColumnCount();
+                for (int i = 0; i < columnCount; i++) {
+                    table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
                 }
-            };
-            int columnCount = table.getColumnCount();
-            for (int i = 0; i < columnCount; i++) {
-                table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
+            } catch (
+                    Exception ex) {
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            IsLight = false;
         }
     }
     public  void setOneRowBackgroundColor(int rowIndex,
