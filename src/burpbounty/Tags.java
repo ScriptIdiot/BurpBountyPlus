@@ -11,6 +11,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 import burp.*;
@@ -197,6 +200,23 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
         this.payloads.clear();
     }
 
+    public  boolean RegexQuery(String query,String BodyString)
+    {
+        boolean ret= false;
+        Pattern p;
+        Matcher m;
+        try {
+            p = Pattern.compile(query, Pattern.CASE_INSENSITIVE);
+            m = p.matcher(BodyString);
+            if(m.find())
+            {
+                ret = true;
+            }
+        } catch (PatternSyntaxException pse) {
+            Tags.this.callbacks.printError("Grep Match line 216 Incorrect regex: " + pse.getPattern());
+        }
+        return ret;
+    }
     public void setRowColor()
     {
         JTable table = logTable;
@@ -213,16 +233,24 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
 
                             String ProfileName = logEntry.profileName;
                             LightColor ShowColor = GetProfileColor(ProfileName);
+                            int matchtype = ShowColor.matchtype;
                             if (!ShowColor.greps.isEmpty()) {
                                 String responseText = new String(logEntry.requestResponse.getResponse());
                                 Boolean isFind = false;
                                 for (String query : ShowColor.greps) {
                                     String[] tokens = query.split(",", 3);
-                                    if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
-                                        isFind = true;
-                                        break;
+                                    if(matchtype == 2) {// regex match
+                                        isFind = Tags.this.RegexQuery(tokens[2],responseText);
+                                    }else{// Simple String
+                                        if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
+                                            isFind = true;
+                                            break;
+                                        }
                                     }
+
                                 }
+
+
                                 if (isFind) {
                                     setBackground(ShowColor.RowColor.get(1));
                                     setForeground(ShowColor.RowColor.get(0));
@@ -564,10 +592,3 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
 
     }
 }
-
-
-
-
-
-
-
