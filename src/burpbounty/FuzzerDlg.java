@@ -26,6 +26,7 @@ public class FuzzerDlg extends JFrame {
     private final JTextField filerText = new JTextField(20);
     private final JButton btStop = new JButton("Stop Fuzz");
     private final JButton btShowIssue = new JButton("Show Issue");
+    private boolean isShowIssue = true;
 
 
     public FuzzerDlg(IBurpExtenderCallbacks callbacks) {
@@ -111,8 +112,8 @@ public class FuzzerDlg extends JFrame {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     String value = filerText.getText();
-
-                    tagui.filerTable(value);
+                    tagui.setFilterText(value);
+                    tagui.filerTable();
 
                 }
             }
@@ -125,8 +126,18 @@ public class FuzzerDlg extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //FuzzerDlg.this.dispose();
-                filerText.setText("H");
-                tagui.filerTableColor();
+                if(isShowIssue == true)
+                {
+                    filerText.setText("H");
+                    tagui.setFilterText("H");
+                    tagui.filerTableColor();
+                    isShowIssue = false;
+                }else {
+                    filerText.setText("");
+                    tagui.setFilterText("");
+                    tagui.filerTable();
+                    isShowIssue = true;
+                }
             }
         });
 
