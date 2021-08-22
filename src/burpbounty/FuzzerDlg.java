@@ -13,7 +13,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * ÅäÖÃ´°¿ÚÀà£¬¸ºÔğÏÔÊ¾ÅäÖÃ´°¿Ú£¬´¦Àí´°¿ÚÏûÏ¢
+ * é…ç½®çª—å£ç±»ï¼Œè´Ÿè´£æ˜¾ç¤ºé…ç½®çª—å£ï¼Œå¤„ç†çª—å£æ¶ˆæ¯
  */
 public class FuzzerDlg extends JFrame {
     private final JPanel mainPanel = new JPanel();
@@ -25,8 +25,7 @@ public class FuzzerDlg extends JFrame {
     public ThreadPoolExecutor executor;
     private final JTextField filerText = new JTextField(20);
     private final JButton btStop = new JButton("Stop Fuzz");
-    private final JButton btCancel = new JButton("Cancel");
-
+    private final JButton btShowIssue = new JButton("Show Issue");
 
 
     public FuzzerDlg(IBurpExtenderCallbacks callbacks) {
@@ -40,7 +39,7 @@ public class FuzzerDlg extends JFrame {
     }
 
     /**
-     * ³õÊ¼»¯UI
+     * åˆå§‹åŒ–UI
      */
     public Tags get_dlg_tags(){
         return this.tagui;
@@ -66,6 +65,10 @@ public class FuzzerDlg extends JFrame {
 
         gbc.gridx = 2;
         gbc.weightx = 0;
+        topPanel.add(btShowIssue, gbc);
+
+        gbc.gridx = 3;
+        gbc.weightx = 0;
         topPanel.add(btStop, gbc);
 
 
@@ -80,36 +83,36 @@ public class FuzzerDlg extends JFrame {
         this.setVisible(true);
         this.add(mainPanel);
         this.addWindowListener(new WindowAdapter() {
-                              @Override
-                              public void windowClosing(WindowEvent e) {
-                                  super.windowClosing(e);
-                                  //do something
-                                  try {
-                                      executor.shutdownNow();
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                //do something
+                try {
+                    executor.shutdownNow();
 
-                                  } catch (Exception ex) {
-                                      callbacks.printError(ex.getMessage());
-                                  }
-                              }});
+                } catch (Exception ex) {
+                    callbacks.printError(ex.getMessage());
+                }
+            }});
 
-        //Ê¹ÅäÖÃ´°¿Ú×Ô¶¯ÊÊÓ¦¿Ø¼ş´óĞ¡£¬·ÀÖ¹²¿·Ö¿Ø¼şÎŞ·¨ÏÔÊ¾
+        //ä½¿é…ç½®çª—å£è‡ªåŠ¨é€‚åº”æ§ä»¶å¤§å°ï¼Œé˜²æ­¢éƒ¨åˆ†æ§ä»¶æ— æ³•æ˜¾ç¤º
         //this.pack();
-        //¾ÓÖĞÏÔÊ¾ÅäÖÃ´°¿Ú
+        //å±…ä¸­æ˜¾ç¤ºé…ç½®çª—å£
         this.setBounds(screensize.width/2-this.getWidth()/2,screensize.height/2-this.getHeight()/2,this.getWidth(),this.getHeight());
     }
 
 
     /**
-     * ³õÊ¼»¯ÊÂ¼ş
+     * åˆå§‹åŒ–äº‹ä»¶
      */
     private void initEvent(){
 
         filerText.addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                   String value = filerText.getText();
+                    String value = filerText.getText();
 
-                   tagui.filerTable(value);
+                    tagui.filerTable(value);
 
                 }
             }
@@ -118,10 +121,12 @@ public class FuzzerDlg extends JFrame {
             public void keyTyped(KeyEvent e) {
             }
         });
-        btCancel.addActionListener(new ActionListener() {
+        btShowIssue.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //FuzzerDlg.this.dispose();
+                filerText.setText("H");
+                tagui.filerTableColor();
             }
         });
 
@@ -140,7 +145,7 @@ public class FuzzerDlg extends JFrame {
 
 
     /**
-     * Îª¿Ø¼ş¸³Öµ
+     * ä¸ºæ§ä»¶èµ‹å€¼
      */
     public void initValue(){
 
