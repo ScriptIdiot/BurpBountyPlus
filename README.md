@@ -6,6 +6,9 @@
 
 BurpBountyPlus 是在BurpBounty的基础添加了右键菜单功能，添加支持了对单个数据包单个参数的漏洞扫描和fuzzer，打通渗透测试的最后一公里，提高效率。
 
+![aa](https://user-images.githubusercontent.com/7532477/130363935-cc1707b6-ef88-4a35-ae9a-ee2d332ce339.gif)
+
+
 # 功能：
 
 |       菜单       |                            功能                             |
