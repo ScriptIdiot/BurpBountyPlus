@@ -38,6 +38,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
     private Map<String, LightColor>  ProfileColors;
     private BurpBountyExtension bbe;
     private boolean IsLight;
+    private String filterText="";
 
     public Tags(final IBurpExtenderCallbacks callbacks, final String tagName, JTabbedPane panel) {
         this.callbacks = callbacks;
@@ -181,9 +182,14 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
             }
     }
 
-
-    public void filerTable(String query)
+    public void setFilterText(String text)
     {
+        this.filterText = text;
+    }
+
+    public void filerTable()
+    {
+        String query = this.filterText;
         TableRowSorter<TableModel> rowSorter = new TableRowSorter(Tags.this);
         Tags.this.logTable.setRowSorter(rowSorter);
         if(query.isEmpty())
@@ -581,6 +587,12 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
                     final int id = log.size();
                     addEntry(new LogEntry(String.valueOf(id),url, status,response_len,payload, pointName,profileName,requestResponse));
                     fireTableRowsInserted(id, id);
+                    if(filterText =="H"){
+                        filerTableColor();
+                    }else{
+                        filerTable();
+                    }
+
                 }
             });
             return 0;
