@@ -79,7 +79,8 @@ https://github.com/SummerSec/BurpBountyProfiles
 
 ## Fuzz 窗口
 
-![](images/image-20210630183709785.png)
+
+![image](https://user-images.githubusercontent.com/7532477/130342865-c2a105c6-423c-4b5d-8fd3-2b9e9d57504e.png)
 
 ![image](https://user-images.githubusercontent.com/7532477/127992360-1c46c281-ff17-4cd6-876a-9be12ad261c6.png)
 
